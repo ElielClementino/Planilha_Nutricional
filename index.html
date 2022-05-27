@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8">
+		<title>Eliel Nutricionista</title>
+		<link rel="icon" href="favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" type="text/css" href="css/reset.css">
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+		<link rel="stylesheet" type="text/css" href="css/animacao.css">
+     <style>
+		 .mensagemDeErro{
+			 color: #f00;
+			 font-size:12pt;
+			 font-style: italic;
+			 font-weight:bolder;
+		 }
+	 </style>
+	</head>
+	<body>
+
+		<header>
+			<div class="container">
+				<h1>Eliel Nutrição</h1>
+			</div>
+		</header>
+		<main>
+			<section class="container">
+				<h2>Meus pacientes</h2>
+				<label for="filtrar-tabela">Filtre sua busca:</label>
+				<input type="text" name="filtro" placeholder="Digite o nome do paciente" id="filtrar-tabela">
+				<table>
+					<thead>
+						<tr>
+							<th>Nome</th>
+							<th>Peso(kg)</th>
+							<th>Altura(m)</th>
+							<th>Gordura Corporal(%)</th>
+							<th>IMC</th>
+						</tr>
+					</thead>
+					<tbody id="tabela-pacientes" >
+						<tr class="paciente" >
+							<td class="info-nome">Paulo</td>
+							<td class="info-peso">100</td>
+							<td class="info-altura">2.00</td>
+							<td class="info-gordura">10</td>
+							<td class="info-imc">0</td>
+						</tr>
+
+						<tr class="paciente" >
+							<td class="info-nome">João</td>
+							<td class="info-peso">60</td>
+							<td class="info-altura">1.72</td>
+							<td class="info-gordura">40</td>
+							<td class="info-imc">0</td>
+						</tr>
+
+						<tr class="paciente" >
+							<td class="info-nome">Erica</td>
+							<td class="info-peso">54</td>
+							<td class="info-altura">1.64</td>
+							<td class="info-gordura">14</td>
+							<td class="info-imc">0</td>
+						</tr>
+
+						<tr class="paciente">
+							<td class="info-nome">Douglas</td>
+							<td class="info-peso">85</td>
+							<td class="info-altura">1.73</td>
+							<td class="info-gordura">24</td>
+							<td class="info-imc">0</td>
+						</tr>
+						<tr class="paciente" >
+							<td class="info-nome">Tatiana</td>
+							<td class="info-peso">46</td>
+							<td class="info-altura">1.55</td>
+							<td class="info-gordura">19</td>
+							<td class="info-imc">0</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</section>
+		</main>
+		<button id="adicionar-paciente2" class="bto-principal2">Buscar Paciente</button>
+		<section class="container">
+    <h2 id="titulo-form">Adicionar novo paciente</h2>
+	<ul id="mensagens-erro">
+    </ul>
+    <form id="form-adiciona">
+        <div class="grupo">
+            <label for="nome">Nome:</label>
+            <input id="nome" name="nome" type="text" placeholder="digite o nome do seu paciente" class="campo">
+        </div>
+        <div class="grupo">
+            <label for="peso">Peso:</label>
+            <input id="peso" name="peso" type="text" placeholder="digite o peso do seu paciente" class="campo campo-medio">
+        </div>
+        <div class="grupo">
+            <label for="altura">Altura:</label>
+            <input id="altura" name="altura" type="text" placeholder="digite a altura do seu paciente" class="campo campo-medio">
+        </div>
+        <div class="grupo">
+            <label for="gordura">% de Gordura:</label>
+            <input id="gordura" type="text" placeholder="digite a porcentagem de gordura do seu paciente" class="campo campo-medio">
+        </div>
+
+        <button id="adicionar-paciente" class="botao bto-principal">Adicionar</button>
+    </form>
+</section>
+    <script>
+	var pacientes = document.querySelectorAll(".paciente");
+for (var i = 0; i < pacientes.length; i++) {
+  var paciente = pacientes[i];
+
+  var tdPeso = paciente.querySelector(".info-peso");
+  var peso = tdPeso.textContent;
+
+  var tdAltura = paciente.querySelector(".info-altura");
+  var altura = tdAltura.textContent;
+
+  var tdImc = document.querySelector(".info-imc");
+	var imc = peso/(altura*altura);
+	tdImc.textContent = Math.round(imc);
+
+  var pesoEhValido = validaPeso(peso);
+  var alturaEhValida = validaAltura(altura);
+
+  if(!pesoEhValido){
+  pesoEhValido = false;
+  tdPeso.textContent = "Peso inválido!";
+  };
+	
+  if(!alturaEhValida){
+  alturaEhValida = false;
+  tdAltura.textContent = "Altura inválida!";
+  };
+ 
+   };
+function calculaImc(peso, altura) {
+var imc = 0;
+imc = peso / (altura * altura);
+
+return Math.round(imc)
+}
+var botaoAdicionar = document.querySelector("#adicionar-paciente");
+botaoAdicionar.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    var form = document.querySelector("#form-adiciona");
+
+    var paciente = obtemPacienteDoFormulario(form);
+
+    var pacienteTr = montaTr(paciente);
+
+	var erros = validaPaciente(paciente);
+	if(erros.length > 0 ){
+		exibeMensagensDeErro(erros);
+		return;
+	};
+
+    var tabela = document.querySelector("#tabela-pacientes");
+
+    tabela.appendChild(pacienteTr);
+	var ul = document.querySelector("#mensagens-erro");
+	ul.innerHTML = "";
+
+    form.reset();
+});
+function exibeMensagensDeErro(erros){
+        var ul = document.querySelector("#mensagens-erro");
+		ul.innerHTML = "";
+        erros.forEach(function(erro){
+         var li = document.createElement("li");
+		 li.classList.add("mensagemDeErro");
+            li.textContent = erro;
+            ul.appendChild(li);   
+		  });
+		 };
+function obtemPacienteDoFormulario(form) {
+
+    var paciente = {
+        nome: form.nome.value,
+        peso: form.peso.value,
+        altura: form.altura.value,
+        gordura: form.gordura.value,
+        imc: calculaImc(form.peso.value, form.altura.value)
+    };
+
+    return paciente;
+};
+
+function montaTr(paciente) {
+
+    var pacienteTr = document.createElement("tr");
+    pacienteTr.classList.add("paciente");
+
+    pacienteTr.appendChild(montaTd(paciente.nome, "info-nome"));
+    pacienteTr.appendChild(montaTd(paciente.peso, "info-peso"));
+    pacienteTr.appendChild(montaTd(paciente.altura, "info-altura"));
+    pacienteTr.appendChild(montaTd(paciente.gordura, "info-gordura"));
+    pacienteTr.appendChild(montaTd(paciente.imc, "info-imc"));
+
+    return pacienteTr;
+};
+function montaTd(dado, classe) {
+    var td = document.createElement("td");
+    td.classList.add(classe);
+    td.textContent = dado;
+
+    return td;
+};
+function validaAltura(altura){
+if (altura >= 0 || altura >= 3.00) {
+		return true;
+	}
+	else{
+		return false;
+	};
+};
+
+function validaPeso(peso){
+	if (peso >= 0 || peso >= 1000){
+	return true;
+}
+ else{
+	 return false;
+	};
+};
+
+function validaPaciente(paciente){
+
+var erros = [];
+if (paciente.nome.length==0){
+	erros.push("O campo do nome não pode ficar em branco");
+};
+if (paciente.altura.length==0){
+	erros.push("O campo de altura não pode ficar em branco");
+};
+if (paciente.peso.length==0){
+	erros.push("O campo do peso não pode ficar em branco");
+};
+if  (paciente.gordura.length==0){
+	erros.push("O campo da gordura não pode ficar em branco");
+};
+if (!validaPeso(paciente.peso))
+	erros.push("Peso é inválido");
+
+if (!validaAltura(paciente.altura)) 
+	erros.push("Altura é inválida");
+return erros;
+};
+//Apaga os pacientes do formulário;
+var pacientes = document.querySelectorAll(".paciente");
+		var tabelar = document.querySelector("table");
+	tabelar.addEventListener("dblclick",function(event){
+	
+
+		var alvoEvento = event.target;
+		var paiDoAlvo = alvoEvento.parentNode;
+		paiDoAlvo.classList.add("fadeOut");
+		setTimeout(function(){
+			paiDoAlvo.remove();
+		},500);
+	});
+	//filtro de busca;
+	var filtro = document.querySelector("#filtrar-tabela");
+     filtro.addEventListener("input",function(){
+		console.log(this.value);
+		var pacientes = document.querySelectorAll(".paciente");
+		if (this.value.length > 0){
+     for(var i = 0; i < pacientes.length; i++){
+	 var paciente = pacientes[i]
+     var tdNome = paciente.querySelector(".info-nome");
+     var nome = tdNome.textContent;
+	 var expressao = new RegExp(this.value,"i");
+	 if (!expressao.test(nome)){
+		 paciente.classList.add("fadeSearch");
+	 }else{
+		 paciente.classList.remove("fadeSearch");
+	 };
+	 };
+	 }else{for (var i = 0; i < pacientes.length; i++) {
+            var paciente = pacientes[i];
+            paciente.classList.remove("fadeSearch");
+        }
+
+	 }
+	 });
+	 //Buscador do outro site
+	 function adicionaPacienteNaTabela(paciente){
+      var pacienteTr = montaTr(paciente)
+	  var tabela = document.querySelector("#tabela-pacientes");
+	  tabela.appendChild(pacienteTr);
+	 }
+	 var buttonSearch = document.querySelector("#adicionar-paciente2");
+	 buttonSearch.addEventListener("click", function(dados){
+
+	 var xhr = new XMLHttpRequest();
+	 xhr.open("get" ,"https://api-pacientes.herokuapp.com/pacientes")
+	 xhr.addEventListener("load",function(){
+		 if(xhr.status==200){
+     var resposta = xhr.responseText;
+	 var pacientes = JSON.parse(resposta);
+	 pacientes.forEach(function(paciente){
+		adicionaPacienteNaTabela(paciente)
+	 })}else{
+		 console.log("Ocorreu um problema com a requisição");
+		 console.log(xhr.status);
+	 };
+	 });
+	 xhr.send();
+	 });
+	
+	</script>
+	</body>
+</html>
